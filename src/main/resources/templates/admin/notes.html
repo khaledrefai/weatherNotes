@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Manage Notes</title>
+
+
+</head>
+<body>
+
+<div layout:fragment="content">
+    <section class="my-5">
+        <div class="container">
+
+
+            <div class="row" style="margin-bottom: 25px;" >
+                         <input type="hidden" id="noteId">
+                    <label class="col-md-1">
+                        Note
+                    </label>
+                            <div class="column col-md-6">
+
+                                <input type="text"    class="form-control" id="note"/>
+                            </div>
+                    <label class="col-md-1">
+                        Note date
+                    </label>
+                            <div class="column col-md-2">
+
+                                <input type="text"   id="noteDate"
+                                       class="form-control"/>
+                            </div>
+                            <div class="column col-md-2">
+                                <button   class="btn btn-primary btn-block" onclick="saveNote()">  save/update </button>
+
+                            </div>
+
+            <div class="form-group col-md-12">
+                <label id="error-msg"   class="validation-message" style="color: red;"></label>
+            </div>
+                        <div class="form-group col-md-12">
+                            <span class="text-success"  ></span>
+                        </div>
+
+            </div>
+            <div class="row" style="margin-bottom: 25px;" >
+                <div class="col-md-12">
+                    <table class="table table-light table-hover table-lg datatable"
+                           cellspacing="0" width="100%" id="tbl_search_result" dir="rtl">
+                        <thead>
+                        <tr role="row">
+                            <th class="sorting_disabled" rowspan="1" colspan="1"
+                                style="">
+                               Note Id
+                            </th>
+
+                            <th class="sorting_disabled" rowspan="1" colspan="1"
+                                style="">
+                                Note
+                            </th>
+                            <th class="sorting_disabled" rowspan="1" colspan="1"
+                                style="">
+                                Note Date
+                            </th>
+
+                            <th class="sorting_disabled" rowspan="1" colspan="1"
+                                style=" ">
+
+                            </th>
+                            <th class="sorting_disabled" rowspan="1" colspan="1"
+                                style="">
+
+                            </th>
+
+
+                        </tr>
+                        </thead>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+
+            function resetNote(){
+             $("#noteId").val("");
+               $("#note").val("");
+               $("#noteDate").val("");
+                $("#error-msg").val("");
+            }
+            function saveNote(){
+                var note = {};
+                note["noteId"] = $("#noteId").val();
+                note["note"] = $("#note").val();
+                note["noteDate"] = $("#noteDate").val();
+
+                $.ajax({
+                    url : "/admin/api/note/save"  ,
+                    type : "POST",
+                    contentType : "application/json; charset=utf-8",
+                    data : JSON.stringify(note),
+                    success : function (data){
+                        table.ajax.reload();
+                        console.log("success");
+                        resetNote();
+                    },
+                    error : function(jqXHR, textStatus, errorThrown) {
+                        var response = jqXHR.responseJSON;
+                        for (var i = 0; i < response.length; i++) {
+                            $("#error-msg").append(response[i] + "  ");
+                        }
+
+                    }
+                });
+            }
+
+            function doedit(column){
+                var data = table.row($(column).parents('tr')).data();
+                console.log(data);
+                $("#noteId").val(data['noteId']);
+                $("#note").val(data['note']);
+                $("#noteDate").val(data['noteDate']);
+            }
+            function dodelete(column){
+               if(!window.confirm("Are you sure to delete ?") )
+                   return;
+
+                var data = table.row($(column).parents('tr')).data();
+                $.ajax({
+                    url : "/admin/api/note/delete",
+                    data :{noteId :data['noteId'] },
+                    type : "delete",
+                    success : function (data){
+                        table.ajax.reload();
+                    }
+                });
+            }
+            var table ;
+            function initSearchResultTable() {
+
+                table = $('#tbl_search_result')
+                    .DataTable(
+                        {
+                            "processing" : true,
+                            "serverSide" : true,
+                            "pageLength" : 10,
+                            "searching" : false,
+                             "bFilter" : false,
+                             "bSort" : false,
+
+                            "ajax" : {
+                                url : "/admin/api/note/search",
+                                type : "post"
+                            },
+                            "columnDefs" : [ {
+                                "targets" : 3,
+                                "data" : null,
+                                "defaultContent" : "<i style='cursor:pointer' onclick='doedit(this)' "
+                                    + "class='fa  fa-edit  fa-2x icons-header-color ' "
+                                    + "aria-hidden='true'></i>"
+
+                            } ,
+
+                                {
+                                    "targets" : 4,
+                                    "data" : null,
+                                    "defaultContent" :
+                                        " <i style='cursor:pointer' onclick='dodelete(this)' "
+                                        + "class='fa  fa-trash  fa-2x icons-header-color ' "
+                                        + "aria-hidden='true'></i>"
+                                }
+
+                            ],
+                            "columns" : [
+
+                                {
+                                    "data" : "noteId"
+                                }, {
+                                    "data" : "note"
+                                }, {
+                                    "data" : "noteDate"
+                                } ,
+                                {
+                                    "data" : ""
+                                } ,
+                                {"data" : ""
+                                } ]
+                        });
+
+            }
+            $(document).ready(function(){
+                console.log("ready");
+                $('#noteDate').datepicker({
+                    format: "dd/mm/yyyy",
+                    todayBtn: "linked",
+                    autoclose: true
+                });
+
+                initSearchResultTable();
+
+            });
+        </script>
+    </section>
+</div>
+</body>
+</html>

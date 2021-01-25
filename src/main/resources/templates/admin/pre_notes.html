@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Predefined Notes</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <section class="my-5">
+        <div class="container">
+             <div class="row clearfix">
+                 <form autocomplete="off" action="#" th:action="@{/admin/saveprenotes}"
+                       th:object="${predefinedNotes}" method="post" class="form-horizontal"
+                       role="form">
+
+                         <label class="col-md-1 column">
+                             Range
+                         </label>
+                         <div class="col-md-3 column">
+
+                     <select th:field="*{predefinedNotesId.rangeId}" class="form-control">
+                         <option th:each="range: ${rangeList}"
+                                 th:value="${range.id}"
+                                 th:text=" ${ 'between' +range.min + ' and ' + range.max} "/>
+                     </select>
+                         </div>
+                             <label class="col-md-1">
+                                 note
+                             </label>
+                         <div class="col-md-6 column">
+                         <label th:if="${#fields.hasErrors('note')}" th:errors="*{note}"
+                                class="validation-message"></label>
+                         <input type="text" th:field="*{note}"
+                                placeholder="Last Name" class="form-control"/>
+
+                     </div>
+
+                         <div class="col-md-1 column">
+                             <button type="submit" class="btn btn-primary btn-block">   save </button>
+                         </div>
+
+                 </form>
+             </div>
+            <div class="row clearfix">
+                <div class="col-md-12 column" style="text-align: center;">
+                    <table class="table table-light table-hover table-lg datatable">
+                        <thead>
+                        <tr>
+                            <th> Min </th>
+                            <th> Max </th>
+                            <th>Note</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${myPredefinedNotesList.empty}">
+                            <td colspan="3"> No predefined notes Available </td>
+                        </tr>
+                        <tr th:each="myPredefinedNote : ${myPredefinedNotesList}">
+                            <td><span th:text="${myPredefinedNote.range.min}">  </span></td>
+                            <td><span th:text="${myPredefinedNote.range.max}">  </span></td>
+                            <td><span th:text="${myPredefinedNote.note}">  </span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+</div>
+</body>
+</html>
