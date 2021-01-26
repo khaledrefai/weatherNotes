@@ -56,19 +56,5 @@ public class LoginController {
         }
         return modelAndView;
     }
-/*
-    @RequestMapping(value="/home", method = RequestMethod.GET)
-    public String home(Authentication auth ){
-      //   Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(auth.getName());
-       if( user.getRoles().stream().anyMatch(role -> role.getRole().equals("ADMIN"))) {
-            return "redirect:/admin/home";
-        }
-        else {
-            return "redirect:/user/home";
-        }
 
-    }
-
-*/
 }

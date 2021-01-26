@@ -41,14 +41,12 @@ public class MainController {
     }
     @GetMapping("/home")
     public String getUserPage(Model model){
-        try {
+
             CurrentWeather currentWeather = weatherService.getCurrentWeather();
             model.addAttribute("noteList", noteService.getTodaySystemNotes());
             model.addAttribute("currentWeather", currentWeather);
             model.addAttribute("predefinedNotesList", noteService.getTodayPredefinedNotes(currentWeather.getTemperature()));
-        }catch (Exception e){
-            logger.error("Error in getUserPage ",e);
-        }
+
         return "home";
     }
 
@@ -58,14 +56,12 @@ public class MainController {
     }
     @GetMapping("admin/pre_notes")
     public String getAdminPreNotes(Model model, Authentication auth,PredefinedNotes predefinedNotes ){
-        try {
+
             User admin = userService.findUserByUserName(auth.getName());
 
             model.addAttribute("rangeList", noteService.getRangeList());
             model.addAttribute("myPredefinedNotesList", noteService.getPredefinedNotesByAdmin(admin));
-        }catch (Exception e){
-            logger.error("error in get pre admin note",e);
-        }
+
         return "admin/pre_notes";
     }
     @PostMapping("admin/saveprenotes")
